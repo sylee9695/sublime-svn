@@ -1,6 +1,6 @@
 { "name": "Svn Commit Message",
-  "scopeName": "text.svn-commit", 
-  "fileTypes": ["COMMIT_EDITMSG"], 
+  "scopeName": "text.svn-commit",
+  "fileTypes": ["COMMIT_EDITMSG"],
   "patterns": [
     { "name": "comment.line.number-sign.svn-commit",
       "match": "^\\s*(#).*$\n?",

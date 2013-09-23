@@ -151,7 +151,7 @@
         "command": "svn_custom"
     }
     ,{
-        "caption": "Svn Flow: Feature Start", 
+        "caption": "Svn Flow: Feature Start",
         "command": "svn_flow_feature_start"
     }
     ,{
