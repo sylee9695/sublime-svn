@@ -2,27 +2,27 @@ import os
 import re
 
 import sublime
-from git import GitTextCommand, GitWindowCommand, git_root
+from svn import SvnTextCommand, SvnWindowCommand, svn_root
 import status
 
 
-class GitAddChoiceCommand(status.GitStatusCommand):
+class SvnAddChoiceCommand(status.SvnStatusCommand):
     def status_filter(self, item):
-        return super(GitAddChoiceCommand, self).status_filter(item) and not item[1].isspace()
+        return super(SvnAddChoiceCommand, self).status_filter(item) and not item[1].isspace()
 
     def show_status_list(self):
         self.results = [[" + All Files", "apart from untracked files"], [" + All Files", "including untracked files"]] + self.results
-        return super(GitAddChoiceCommand, self).show_status_list()
+        return super(SvnAddChoiceCommand, self).show_status_list()
 
     def panel_followup(self, picked_status, picked_file, picked_index):
-        working_dir = git_root(self.get_working_dir())
+        working_dir = svn_root(self.get_working_dir())
 
         if picked_index == 0:
-            command = ['git', 'add', '--update']
+            command = ['svn', 'add', '--update']
         elif picked_index == 1:
-            command = ['git', 'add', '--all']
+            command = ['svn', 'add', '--all']
         else:
-            command = ['git']
+            command = ['svn']
             picked_file = picked_file.strip('"')
             if os.path.isfile(working_dir + "/" + picked_file):
                 command += ['add']
@@ -37,14 +37,14 @@ class GitAddChoiceCommand(status.GitStatusCommand):
         self.run()
 
 
-class GitAdd(GitTextCommand):
+class SvnAdd(SvnTextCommand):
     def run(self, edit):
-        self.run_command(['git', 'add', self.get_file_name()])
+        self.run_command(['svn', 'add', self.get_file_name()])
 
 
-class GitAddSelectedHunkCommand(GitTextCommand):
+class SvnAddSelectedHunkCommand(SvnTextCommand):
     def run(self, edit):
-        self.run_command(['git', 'diff', '--no-color', '-U1', self.get_file_name()], self.cull_diff)
+        self.run_command(['svn', 'diff', '--no-color', '-U1', self.get_file_name()], self.cull_diff)
 
     def cull_diff(self, result):
         selection = []
@@ -83,7 +83,7 @@ class GitAddSelectedHunkCommand(GitTextCommand):
                 selection_is_hunky = True
 
         if selection_is_hunky:
-            self.run_command(['git', 'apply', '--cached'], stdin=diffs)
+            self.run_command(['svn', 'apply', '--cached'], stdin=diffs)
         else:
             sublime.status_message("No selected hunk")
 
@@ -91,25 +91,25 @@ class GitAddSelectedHunkCommand(GitTextCommand):
 # Also, sometimes we want to undo adds
 
 
-class GitResetHead(object):
+class SvnResetHead(object):
     def run(self, edit=None):
-        self.run_command(['git', 'reset', 'HEAD', self.get_file_name()])
+        self.run_command(['svn', 'reset', 'HEAD', self.get_file_name()])
 
     def generic_done(self, result):
         pass
 
 
-class GitResetHeadCommand(GitResetHead, GitTextCommand):
+class SvnResetHeadCommand(SvnResetHead, SvnTextCommand):
     pass
 
 
-class GitResetHeadAllCommand(GitResetHead, GitWindowCommand):
+class SvnResetHeadAllCommand(SvnResetHead, SvnWindowCommand):
     pass
 
 
-class GitResetHardHeadCommand(GitWindowCommand):
+class SvnResetHardHeadCommand(SvnWindowCommand):
     may_change_files = True
 
     def run(self):
         if sublime.ok_cancel_dialog("Warning: this will reset your index and revert all files, throwing away all your uncommitted changes with no way to recover. Consider stashing your changes instead if you'd like to set them aside safely.", "Continue"):
-            self.run_command(['git', 'reset', '--hard', 'HEAD'])
+            self.run_command(['svn', 'reset', '--hard', 'HEAD'])

@@ -2,14 +2,14 @@ import os
 import re
 
 import sublime
-from git import GitWindowCommand, git_root
+from svn import SvnWindowCommand, svn_root
 
 
-class GitStatusCommand(GitWindowCommand):
+class SvnStatusCommand(SvnWindowCommand):
     force_open = False
 
     def run(self):
-        self.run_command(['git', 'status', '--porcelain'], self.status_done)
+        self.run_command(['svn', 'status', '--porcelain'], self.status_done)
 
     def status_done(self, result):
         self.results = filter(self.status_filter, result.rstrip().split('\n'))
@@ -40,22 +40,22 @@ class GitStatusCommand(GitWindowCommand):
     def panel_followup(self, picked_status, picked_file, picked_index):
         # split out solely so I can override it for laughs
 
-        s = sublime.load_settings("Git.sublime-settings")
-        root = git_root(self.get_working_dir())
+        s = sublime.load_settings("Svn.sublime-settings")
+        root = svn_root(self.get_working_dir())
         if picked_status == '??' or s.get('status_opens_file') or self.force_open:
             if(os.path.isfile(os.path.join(root, picked_file))):
                 self.window.open_file(os.path.join(root, picked_file))
         else:
-            self.run_command(['git', 'diff', '--no-color', '--', picked_file.strip('"')],
+            self.run_command(['svn', 'diff', '--no-color', '--', picked_file.strip('"')],
                 self.diff_done, working_dir=root)
 
     def diff_done(self, result):
         if not result.strip():
             return
-        self.scratch(result, title="Git Diff")
+        self.scratch(result, title="Svn Diff")
 
 
-class GitOpenModifiedFilesCommand(GitStatusCommand):
+class SvnOpenModifiedFilesCommand(SvnStatusCommand):
     force_open = True
 
     def show_status_list(self):

@@ -2,12 +2,12 @@
 	// save before running commands
 	"save_first": true
 
-	// if present, use this command instead of plain "git"
-	// e.g. "/Users/kemayo/bin/git" or "C:\bin\git.exe"
-	,"git_command": false
+	// if present, use this command instead of plain "svn"
+	// e.g. "/Users/kemayo/bin/svn" or "C:\bin\svn.exe"
+	,"svn_command": false
 
-	// point this the installation location of git-flow
-	,"git_flow_command": "/usr/local/bin/git-flow"
+	// point this the installation location of svn-flow
+	,"svn_flow_command": "/usr/local/bin/svn-flow"
 
 	// use the panel for diff output, rather than a new scratch window (new tab)
 	,"diff_panel": false
@@ -18,8 +18,8 @@
 	,"blame_whole_file": true
 
 	// If you'd rather have your status command open files instead of show you a
-	// diff, set this to true.  You can still do `Git: Status` followed by
-	// 'Git: Diff Current File' to get a file diff
+	// diff, set this to true.  You can still do `Svn: Status` followed by
+	// 'Svn: Diff Current File' to get a file diff
 	,"status_opens_file": false
 
 	// Use --verbose flag for commit messages
@@ -28,7 +28,7 @@
 	// How many commit messages to store in the history. Set to 0 to disable.
 	,"history_size": 5
 
-	// Show git flow commands
+	// Show svn flow commands
 	,"flow": false
 
 	// Annotations default to being on for all files. Can be slow in some cases.
@@ -36,7 +36,7 @@
 
 	// statusbar
 	,"statusbar_branch": true
-	// Symbols for quick git status in status bar
+	// Symbols for quick svn status in status bar
 	,"statusbar_status": true
 	,"statusbar_status_symbols" : {"modified": "≠", "added": "+", "deleted": "×", "untracked": "?", "conflicts": "‼", "renamed":"R", "copied":"C", "clean": "√", "separator": " "}
 }

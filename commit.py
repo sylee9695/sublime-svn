@@ -4,13 +4,13 @@ import os
 
 import sublime
 import sublime_plugin
-from git import GitTextCommand, GitWindowCommand, plugin_file, view_contents, _make_text_safeish
+from svn import SvnTextCommand, SvnWindowCommand, plugin_file, view_contents, _make_text_safeish
 import add
 
 history = []
 
 
-class GitQuickCommitCommand(GitTextCommand):
+class SvnQuickCommitCommand(SvnTextCommand):
     def run(self, edit):
         self.get_window().show_input_panel("Message", "",
             self.on_input, None, None)
@@ -19,14 +19,14 @@ class GitQuickCommitCommand(GitTextCommand):
         if message.strip() == "":
             self.panel("No commit message provided")
             return
-        self.run_command(['git', 'add', self.get_file_name()],
+        self.run_command(['svn', 'add', self.get_file_name()],
             functools.partial(self.add_done, message))
 
     def add_done(self, message, result):
         if result.strip():
             sublime.error_message("Error adding file:\n" + result)
             return
-        self.run_command(['git', 'commit', '-m', message])
+        self.run_command(['svn', 'commit', '-m', message])
 
 
 # Commit is complicated. It'd be easy if I just wanted to let it run
@@ -38,7 +38,7 @@ class GitQuickCommitCommand(GitTextCommand):
 # Thus this flow:
 # 1. `status --porcelain --untracked-files=no` to know whether files need
 #    to be committed
-# 2. `status` to get a template commit message (not the exact one git uses; I
+# 2. `status` to get a template commit message (not the exact one svn uses; I
 #    can't see a way to ask it to output that, which is not quite ideal)
 # 3. Create a scratch buffer containing the template
 # 4. When this buffer is closed, get its contents with an event handler and
@@ -48,7 +48,7 @@ class GitQuickCommitCommand(GitTextCommand):
 # 5. Strip lines beginning with # from the message, and save in a temporary
 #    file
 # 6. `commit -F [tempfile]`
-class GitCommitCommand(GitWindowCommand):
+class SvnCommitCommand(SvnWindowCommand):
     active_message = False
     extra_options = ""
 
@@ -56,7 +56,7 @@ class GitCommitCommand(GitWindowCommand):
         self.lines = []
         self.working_dir = self.get_working_dir()
         self.run_command(
-            ['git', 'status', '--untracked-files=no', '--porcelain'],
+            ['svn', 'status', '--untracked-files=no', '--porcelain'],
             self.porcelain_status_done
             )
 
@@ -72,14 +72,14 @@ class GitCommitCommand(GitWindowCommand):
             self.panel("Nothing to commit")
             return
         # Okay, get the template!
-        s = sublime.load_settings("Git.sublime-settings")
+        s = sublime.load_settings("Svn.sublime-settings")
         if s.get("verbose_commits"):
-            self.run_command(['git', 'diff', '--staged', '--no-color'], self.diff_done)
+            self.run_command(['svn', 'diff', '--staged', '--no-color'], self.diff_done)
         else:
-            self.run_command(['git', 'status'], self.diff_done)
+            self.run_command(['svn', 'status'], self.diff_done)
 
     def diff_done(self, result):
-        settings = sublime.load_settings("Git.sublime-settings")
+        settings = sublime.load_settings("Svn.sublime-settings")
         historySize = settings.get('history_size')
 
         def format(line):
@@ -100,14 +100,14 @@ class GitCommitCommand(GitWindowCommand):
         msg = self.window.new_file()
         msg.set_scratch(True)
         msg.set_name("COMMIT_EDITMSG")
-        self._output_to_view(msg, template, syntax=plugin_file("syntax/Git Commit Message.tmLanguage"))
+        self._output_to_view(msg, template, syntax=plugin_file("syntax/Svn Commit Message.tmLanguage"))
         msg.sel().clear()
         msg.sel().add(sublime.Region(0, 0))
-        GitCommitCommand.active_message = self
+        SvnCommitCommand.active_message = self
 
     def message_done(self, message):
-        # filter out the comments (git commit doesn't do this automatically)
-        settings = sublime.load_settings("Git.sublime-settings")
+        # filter out the comments (svn commit doesn't do this automatically)
+        settings = sublime.load_settings("Svn.sublime-settings")
         historySize = settings.get('history_size')
         lines = [line for line in message.split("\n# --------------")[0].split("\n")
             if not line.lstrip().startswith('#')]
@@ -122,7 +122,7 @@ class GitCommitCommand(GitWindowCommand):
         self.message_file = message_file
         # and actually commit
         with open(message_file.name, 'r') as fp:
-            self.run_command(['git', 'commit', '-F', '-', self.extra_options],
+            self.run_command(['svn', 'commit', '-F', '-', self.extra_options],
                 self.commit_done, working_dir=self.working_dir, stdin=fp.read())
 
     def commit_done(self, result, **kwargs):
@@ -130,30 +130,30 @@ class GitCommitCommand(GitWindowCommand):
         self.panel(result)
 
 
-class GitCommitAmendCommand(GitCommitCommand):
+class SvnCommitAmendCommand(SvnCommitCommand):
     extra_options = "--amend"
 
     def diff_done(self, result):
         self.after_show = result
-        self.run_command(['git', 'log', '-n', '1', '--format=format:%B'], self.amend_diff_done)
+        self.run_command(['svn', 'log', '-n', '1', '--format=format:%B'], self.amend_diff_done)
 
     def amend_diff_done(self, result):
         self.lines = result.split("\n")
-        super(GitCommitAmendCommand, self).diff_done(self.after_show)
+        super(SvnCommitAmendCommand, self).diff_done(self.after_show)
 
 
-class GitCommitMessageListener(sublime_plugin.EventListener):
+class SvnCommitMessageListener(sublime_plugin.EventListener):
     def on_close(self, view):
         if view.name() != "COMMIT_EDITMSG":
             return
-        command = GitCommitCommand.active_message
+        command = SvnCommitCommand.active_message
         if not command:
             return
         message = view_contents(view)
         command.message_done(message)
 
 
-class GitCommitHistoryCommand(sublime_plugin.TextCommand):
+class SvnCommitHistoryCommand(sublime_plugin.TextCommand):
     def run(self, edit):
         self.edit = edit
         self.view.window().show_quick_panel(history, self.panel_done, sublime.MONOSPACE_FONT)
@@ -163,7 +163,7 @@ class GitCommitHistoryCommand(sublime_plugin.TextCommand):
             self.view.replace(self.edit, self.view.sel()[0], history[index] + '\n')
 
 
-class GitCommitSelectedHunk(add.GitAddSelectedHunkCommand):
+class SvnCommitSelectedHunk(add.SvnAddSelectedHunkCommand):
     def run(self, edit):
-        self.run_command(['git', 'diff', '--no-color', self.get_file_name()], self.cull_diff)
-        self.get_window().run_command('git_commit')
+        self.run_command(['svn', 'diff', '--no-color', self.get_file_name()], self.cull_diff)
+        self.get_window().run_command('svn_commit')

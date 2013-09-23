@@ -7,7 +7,7 @@
 		<string>COMMIT_EDITMSG</string>
 	</array>
 	<key>name</key>
-	<string>Git Commit Message</string>
+	<string>Svn Commit Message</string>
 	<key>patterns</key>
 	<array>
 		<dict>
@@ -16,24 +16,24 @@
 				<key>1</key>
 				<dict>
 					<key>name</key>
-					<string>punctuation.definition.comment.git-commit</string>
+					<string>punctuation.definition.comment.svn-commit</string>
 				</dict>
 			</dict>
 			<key>match</key>
 			<string>^\s*(#).*$
 ?</string>
 			<key>name</key>
-			<string>comment.line.number-sign.git-commit</string>
+			<string>comment.line.number-sign.svn-commit</string>
 		</dict>
 		<dict>
 			<key>begin</key>
-			<string>diff\ \-\-git</string>
+			<string>diff\ \-\-svn</string>
 			<key>comment</key>
 			<string>diff at the end of the commit message when using commit -v, or viewing a log. End pattern is just something to be never matched so that the meta continues untill the end of the file.</string>
 			<key>end</key>
 			<string>(?=xxxxxx)123457</string>
 			<key>name</key>
-			<string>meta.diff.git-commit</string>
+			<string>meta.diff.svn-commit</string>
 			<key>patterns</key>
 			<array>
 				<dict>
@@ -44,7 +44,7 @@
 		</dict>
 	</array>
 	<key>scopeName</key>
-	<string>text.git-commit</string>
+	<string>text.svn-commit</string>
 	<key>uuid</key>
 	<string>de3fb2fc-e564-4a31-9813-5ee26967c5c8</string>
 </dict>

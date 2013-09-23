@@ -1,6 +1,6 @@
 import sublime
 import re
-from git import git_root, GitTextCommand, GitWindowCommand
+from svn import svn_root, SvnTextCommand, SvnWindowCommand
 import functools
 
 
@@ -16,20 +16,20 @@ def goto_xy(view, line, col):
         view.run_command("move", {"by": "characters", "forward": True})
 
 
-class GitDiff (object):
+class SvnDiff (object):
     def run(self, edit=None):
-        self.run_command(['git', 'diff', '--no-color', '--', self.get_file_name()],
+        self.run_command(['svn', 'diff', '--no-color', '--', self.get_file_name()],
                          self.diff_done)
 
     def diff_done(self, result):
         if not result.strip():
             self.panel("No output")
             return
-        s = sublime.load_settings("Git.sublime-settings")
+        s = sublime.load_settings("Svn.sublime-settings")
         if s.get('diff_panel'):
             view = self.panel(result)
         else:
-            view = self.scratch(result, title="Git Diff")
+            view = self.scratch(result, title="Svn Diff")
 
         lines_inserted = view.find_all(r'^\+[^+]{2} ')
         lines_deleted = view.find_all(r'^-[^-]{2} ')
@@ -37,50 +37,50 @@ class GitDiff (object):
         view.add_regions("inserted", lines_inserted, "markup.inserted.diff", "dot", sublime.HIDDEN)
         view.add_regions("deleted", lines_deleted, "markup.deleted.diff", "dot", sublime.HIDDEN)
 
-        # Store the git root directory in the view so we can resolve relative paths
+        # Store the svn root directory in the view so we can resolve relative paths
         # when the user wants to navigate to the source file.
-        view.settings().set("git_root_dir", git_root(self.get_working_dir()))
+        view.settings().set("svn_root_dir", svn_root(self.get_working_dir()))
 
 
-class GitDiffCommit (object):
+class SvnDiffCommit (object):
     def run(self, edit=None):
-        self.run_command(['git', 'diff', '--cached', '--no-color'],
+        self.run_command(['svn', 'diff', '--cached', '--no-color'],
             self.diff_done)
 
     def diff_done(self, result):
         if not result.strip():
             self.panel("No output")
             return
-        self.scratch(result, title="Git Diff")
+        self.scratch(result, title="Svn Diff")
 
 
-class GitDiffCommand(GitDiff, GitTextCommand):
+class SvnDiffCommand(SvnDiff, SvnTextCommand):
     pass
 
 
-class GitDiffAllCommand(GitDiff, GitWindowCommand):
+class SvnDiffAllCommand(SvnDiff, SvnWindowCommand):
     pass
 
 
-class GitDiffCommitCommand(GitDiffCommit, GitWindowCommand):
+class SvnDiffCommitCommand(SvnDiffCommit, SvnWindowCommand):
     pass
 
 
-class GitDiffTool(object):
+class SvnDiffTool(object):
     def run(self, edit=None):
-        self.run_command(['git', 'difftool', '--', self.get_file_name()])
+        self.run_command(['svn', 'difftool', '--', self.get_file_name()])
 
 
-class GitDiffToolCommand(GitDiffTool, GitTextCommand):
+class SvnDiffToolCommand(SvnDiffTool, SvnTextCommand):
     pass
 
 
-class GitDiffToolAll(GitWindowCommand):
+class SvnDiffToolAll(SvnWindowCommand):
     def run(self):
-        self.run_command(['git', 'difftool'])
+        self.run_command(['svn', 'difftool'])
 
 
-class GitGotoDiff(sublime_plugin.TextCommand):
+class SvnGotoDiff(sublime_plugin.TextCommand):
     def run(self, edit):
         v = self.view
         view_scope_name = v.scope_name(v.sel()[0].a)
@@ -120,37 +120,37 @@ class GitGotoDiff(sublime_plugin.TextCommand):
         hunk_start_line = hunk.group(3)
         self.goto_line = int(hunk_start_line) + line_offset - 1
 
-        git_root_dir = v.settings().get("git_root_dir")
+        svn_root_dir = v.settings().get("svn_root_dir")
 
         # Sanity check and see if the file we're going to try to open even
         # exists. If it does not, prompt the user for the correct base directory
         # to use for their diff.
         full_path_file_name = self.file_name
-        if git_root_dir:
-            full_path_file_name = os.path.join(git_root_dir, self.file_name)
+        if svn_root_dir:
+            full_path_file_name = os.path.join(svn_root_dir, self.file_name)
         else:
-            git_root_dir = ""
+            svn_root_dir = ""
 
         if not os.path.isfile(full_path_file_name):
             caption = "Enter base directory for file '%s':" % self.file_name
             v.window().show_input_panel(caption,
-                                        git_root_dir,
+                                        svn_root_dir,
                                         self.on_path_confirmed,
                                         None,
                                         None)
         else:
-            self.on_path_confirmed(git_root_dir)
+            self.on_path_confirmed(svn_root_dir)
 
-    def on_path_confirmed(self, git_root_dir):
+    def on_path_confirmed(self, svn_root_dir):
         v = self.view
-        old_git_root_dir = v.settings().get("git_root_dir")
+        old_svn_root_dir = v.settings().get("svn_root_dir")
 
-        # If the user provided a new git_root_dir, save it in the view settings
+        # If the user provided a new svn_root_dir, save it in the view settings
         # so they only have to fix it once
-        if old_git_root_dir != git_root_dir:
-            v.settings().set("git_root_dir", git_root_dir)
+        if old_svn_root_dir != svn_root_dir:
+            v.settings().set("svn_root_dir", svn_root_dir)
 
-        full_path_file_name = os.path.join(git_root_dir, self.file_name)
+        full_path_file_name = os.path.join(svn_root_dir, self.file_name)
 
         new_view = v.window().open_file(full_path_file_name)
         do_when(lambda: not new_view.is_loading(),

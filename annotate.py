@@ -4,44 +4,44 @@ import os
 
 import sublime
 import sublime_plugin
-from git import git_root, GitTextCommand
+from svn import svn_root, SvnTextCommand
 
 
-class GitClearAnnotationCommand(GitTextCommand):
+class SvnClearAnnotationCommand(SvnTextCommand):
     def run(self, view):
-        self.active_view().settings().set('live_git_annotations', False)
-        self.view.erase_regions('git.changes.x')
-        self.view.erase_regions('git.changes.+')
-        self.view.erase_regions('git.changes.-')
+        self.active_view().settings().set('live_svn_annotations', False)
+        self.view.erase_regions('svn.changes.x')
+        self.view.erase_regions('svn.changes.+')
+        self.view.erase_regions('svn.changes.-')
 
 
-class GitToggleAnnotationsCommand(GitTextCommand):
+class SvnToggleAnnotationsCommand(SvnTextCommand):
     def run(self, view):
-        if self.active_view().settings().get('live_git_annotations'):
-            self.view.run_command('git_clear_annotation')
+        if self.active_view().settings().get('live_svn_annotations'):
+            self.view.run_command('svn_clear_annotation')
         else:
-            self.view.run_command('git_annotate')
+            self.view.run_command('svn_annotate')
 
 
-class GitAnnotationListener(sublime_plugin.EventListener):
+class SvnAnnotationListener(sublime_plugin.EventListener):
     def on_modified(self, view):
-        if not view.settings().get('live_git_annotations'):
+        if not view.settings().get('live_svn_annotations'):
             return
-        view.run_command('git_annotate')
+        view.run_command('svn_annotate')
 
     def on_load(self, view):
-        s = sublime.load_settings("Git.sublime-settings")
+        s = sublime.load_settings("Svn.sublime-settings")
         if s.get('annotations'):
-            view.run_command('git_annotate')
+            view.run_command('svn_annotate')
 
 
-class GitAnnotateCommand(GitTextCommand):
-    # Unfortunately, git diff does not support text from stdin, making a *live*
+class SvnAnnotateCommand(SvnTextCommand):
+    # Unfortunately, svn diff does not support text from stdin, making a *live*
     # annotation difficult. Therefore I had to resort to the system diff
     # command.
     # This works as follows:
     # 1. When the command is run for the first time for this file, a temporary
-    #    file with the current state of the HEAD is being pulled from git.
+    #    file with the current state of the HEAD is being pulled from svn.
     # 2. All consecutive runs will pass the current buffer into diffs stdin.
     #    The resulting output is then parsed and regions are set accordingly.
     def run(self, view):
@@ -51,17 +51,17 @@ class GitAnnotateCommand(GitTextCommand):
             self.compare_tmp(None)
             return
         self.tmp = tempfile.NamedTemporaryFile()
-        self.active_view().settings().set('live_git_annotations', True)
-        root = git_root(self.get_working_dir())
+        self.active_view().settings().set('live_svn_annotations', True)
+        root = svn_root(self.get_working_dir())
         repo_file = os.path.relpath(self.view.file_name(), root)
-        self.run_command(['git', 'show', 'HEAD:{0}'.format(repo_file)], show_status=False, no_save=True, callback=self.compare_tmp, stdout=self.tmp)
+        self.run_command(['svn', 'show', 'HEAD:{0}'.format(repo_file)], show_status=False, no_save=True, callback=self.compare_tmp, stdout=self.tmp)
 
     def compare_tmp(self, result, stdout=None):
         all_text = self.view.substr(sublime.Region(0, self.view.size())).encode("utf-8")
         self.run_command(['diff', '-u', self.tmp.name, '-'], stdin=all_text, no_save=True, show_status=False, callback=self.parse_diff)
 
     # This is where the magic happens. At the moment, only one chunk format is supported. While
-    # the unified diff format theoritaclly supports more, I don't think git diff creates them.
+    # the unified diff format theoritaclly supports more, I don't think svn diff creates them.
     def parse_diff(self, result, stdin=None):
         lines = result.splitlines()
         matcher = re.compile('^@@ -([0-9]*),([0-9]*) \+([0-9]*),([0-9]*) @@')
@@ -107,9 +107,9 @@ class GitAnnotateCommand(GitTextCommand):
     # Once we got all lines with their specific change types (either x, +, or - for
     # modified, added, or removed) we can create our regions and do the actual annotation.
     def annotate(self, diff):
-        self.view.erase_regions('git.changes.x')
-        self.view.erase_regions('git.changes.+')
-        self.view.erase_regions('git.changes.-')
+        self.view.erase_regions('svn.changes.x')
+        self.view.erase_regions('svn.changes.+')
+        self.view.erase_regions('svn.changes.-')
         typed_diff = {'x': [], '+': [], '-': []}
         for change_type, line in diff:
             if change_type == '-':
@@ -125,6 +125,6 @@ class GitAnnotateCommand(GitTextCommand):
                 typed_diff[change_type].append(region)
 
         for change in ['x', '+']:
-            self.view.add_regions("git.changes.{0}".format(change), typed_diff[change], 'git.changes.{0}'.format(change), 'dot', sublime.HIDDEN)
+            self.view.add_regions("svn.changes.{0}".format(change), typed_diff[change], 'svn.changes.{0}'.format(change), 'dot', sublime.HIDDEN)
 
-        self.view.add_regions("git.changes.-", typed_diff['-'], 'git.changes.-', 'dot', sublime.DRAW_EMPTY_AS_OVERWRITE)
+        self.view.add_regions("svn.changes.-", typed_diff['-'], 'svn.changes.-', 'dot', sublime.DRAW_EMPTY_AS_OVERWRITE)

@@ -1,25 +1,25 @@
 import sublime
-from git import GitWindowCommand
+from svn import SvnWindowCommand
 
 
-class GitFlowCommand(GitWindowCommand):
+class SvnFlowCommand(SvnWindowCommand):
     def is_visible(self):
-        s = sublime.load_settings("Git.sublime-settings")
+        s = sublime.load_settings("Svn.sublime-settings")
         if s.get('flow'):
             return True
 
 
-class GitFlowFeatureStartCommand(GitFlowCommand):
+class SvnFlowFeatureStartCommand(SvnFlowCommand):
     def run(self):
         self.get_window().show_input_panel('Enter Feature Name:', '', self.on_done, None, None)
 
     def on_done(self, feature_name):
-        self.run_command(['git-flow', 'feature', 'start', feature_name])
+        self.run_command(['svn-flow', 'feature', 'start', feature_name])
 
 
-class GitFlowFeatureFinishCommand(GitFlowCommand):
+class SvnFlowFeatureFinishCommand(SvnFlowCommand):
     def run(self):
-        self.run_command(['git-flow', 'feature'], self.feature_done)
+        self.run_command(['svn-flow', 'feature'], self.feature_done)
 
     def feature_done(self, result):
         self.results = result.rstrip().split('\n')
@@ -33,20 +33,20 @@ class GitFlowFeatureFinishCommand(GitFlowCommand):
         if picked_feature.startswith("*"):
             picked_feature = picked_feature.strip("*")
         picked_feature = picked_feature.strip()
-        self.run_command(['git-flow', 'feature', 'finish', picked_feature])
+        self.run_command(['svn-flow', 'feature', 'finish', picked_feature])
 
 
-class GitFlowReleaseStartCommand(GitFlowCommand):
+class SvnFlowReleaseStartCommand(SvnFlowCommand):
     def run(self):
         self.get_window().show_input_panel('Enter Version Number:', '', self.on_done, None, None)
 
     def on_done(self, release_name):
-        self.run_command(['git-flow', 'release', 'start', release_name])
+        self.run_command(['svn-flow', 'release', 'start', release_name])
 
 
-class GitFlowReleaseFinishCommand(GitFlowCommand):
+class SvnFlowReleaseFinishCommand(SvnFlowCommand):
     def run(self):
-        self.run_command(['git-flow', 'release'], self.release_done)
+        self.run_command(['svn-flow', 'release'], self.release_done)
 
     def release_done(self, result):
         self.results = result.rstrip().split('\n')
@@ -60,20 +60,20 @@ class GitFlowReleaseFinishCommand(GitFlowCommand):
         if picked_release.startswith("*"):
             picked_release = picked_release.strip("*")
         picked_release = picked_release.strip()
-        self.run_command(['git-flow', 'release', 'finish', picked_release])
+        self.run_command(['svn-flow', 'release', 'finish', picked_release])
 
 
-class GitFlowHotfixStartCommand(GitFlowCommand):
+class SvnFlowHotfixStartCommand(SvnFlowCommand):
     def run(self):
         self.get_window().show_input_panel('Enter hotfix name:', '', self.on_done, None, None)
 
     def on_done(self, hotfix_name):
-        self.run_command(['git-flow', 'hotfix', 'start', hotfix_name])
+        self.run_command(['svn-flow', 'hotfix', 'start', hotfix_name])
 
 
-class GitFlowHotfixFinishCommand(GitFlowCommand):
+class SvnFlowHotfixFinishCommand(SvnFlowCommand):
     def run(self):
-        self.run_command(['git-flow', 'hotfix'], self.hotfix_done)
+        self.run_command(['svn-flow', 'hotfix'], self.hotfix_done)
 
     def hotfix_done(self, result):
         self.results = result.rstrip().split('\n')
@@ -87,4 +87,4 @@ class GitFlowHotfixFinishCommand(GitFlowCommand):
         if picked_hotfix.startswith("*"):
             picked_hotfix = picked_hotfix.strip("*")
         picked_hotfix = picked_hotfix.strip()
-        self.run_command(['git-flow', 'hotfix', 'finish', picked_hotfix])
+        self.run_command(['svn-flow', 'hotfix', 'finish', picked_hotfix])

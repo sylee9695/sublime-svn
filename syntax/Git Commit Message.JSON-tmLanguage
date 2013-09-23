@@ -1,16 +1,16 @@
-{ "name": "Git Commit Message",
-  "scopeName": "text.git-commit", 
+{ "name": "Svn Commit Message",
+  "scopeName": "text.svn-commit", 
   "fileTypes": ["COMMIT_EDITMSG"], 
   "patterns": [
-    { "name": "comment.line.number-sign.git-commit",
+    { "name": "comment.line.number-sign.svn-commit",
       "match": "^\\s*(#).*$\n?",
       "captures": {
-        "1": { "name": "punctuation.definition.comment.git-commit" }
+        "1": { "name": "punctuation.definition.comment.svn-commit" }
       }
     },
-    { "name": "meta.diff.git-commit",
+    { "name": "meta.diff.svn-commit",
       "comment": "diff at the end of the commit message when using commit -v, or viewing a log. End pattern is just something to be never matched so that the meta continues untill the end of the file.",
-      "begin": "diff\\ \\-\\-git",
+      "begin": "diff\\ \\-\\-svn",
       "end": "(?=xxxxxx)123457",
       "patterns": [
         { "include": "source.diff" }

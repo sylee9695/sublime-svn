@@ -2,41 +2,41 @@ import re
 
 import sublime
 import sublime_plugin
-from git import GitTextCommand
+from svn import SvnTextCommand
 
 
-class GitBranchStatusListener(sublime_plugin.EventListener):
+class SvnBranchStatusListener(sublime_plugin.EventListener):
     def on_activated(self, view):
-        view.run_command("git_branch_status")
+        view.run_command("svn_branch_status")
 
     def on_post_save(self, view):
-        view.run_command("git_branch_status")
+        view.run_command("svn_branch_status")
 
 
-class GitBranchStatusCommand(GitTextCommand):
+class SvnBranchStatusCommand(SvnTextCommand):
     def run(self, view):
-        s = sublime.load_settings("Git.sublime-settings")
+        s = sublime.load_settings("Svn.sublime-settings")
         if s.get("statusbar_branch"):
-            self.run_command(['git', 'rev-parse', '--abbrev-ref', 'HEAD'], self.branch_done, show_status=False, no_save=True)
+            self.run_command(['svn', 'rev-parse', '--abbrev-ref', 'HEAD'], self.branch_done, show_status=False, no_save=True)
         else:
-            self.view.set_status("git-branch", "")
+            self.view.set_status("svn-branch", "")
         if (s.get("statusbar_status")):
-            self.run_command(['git', 'status', '--porcelain'], self.status_done, show_status=False, no_save=True)
+            self.run_command(['svn', 'status', '--porcelain'], self.status_done, show_status=False, no_save=True)
         else:
-            self.view.set_status("git-status", "")
+            self.view.set_status("svn-status", "")
 
     def branch_done(self, result):
-        self.view.set_status("git-branch", "git branch: " + result.strip())
+        self.view.set_status("svn-branch", "svn branch: " + result.strip())
 
     def status_done(self, result):
         lines = [line for line in result.splitlines() if re.match(r'^[ MADRCU?!]{1,2}\s+.*', line)]
         index = [line[0] for line in lines if not line[0].isspace()]
         working = [line[1] for line in lines if not line[1].isspace()]
-        self.view.set_status("git-status-index", "index: " + self.status_string(index))
-        self.view.set_status("git-status-working", "working: " + self.status_string(working))
+        self.view.set_status("svn-status-index", "index: " + self.status_string(index))
+        self.view.set_status("svn-status-working", "working: " + self.status_string(working))
 
     def status_string(self, statuses):
-        s = sublime.load_settings("Git.sublime-settings")
+        s = sublime.load_settings("Svn.sublime-settings")
         symbols = s.get("statusbar_status_symbols")
         if not statuses:
             return symbols['clean']

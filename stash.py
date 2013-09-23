@@ -1,24 +1,24 @@
-from git import GitWindowCommand
+from svn import SvnWindowCommand
 
 
-class GitStashCommand(GitWindowCommand):
+class SvnStashCommand(SvnWindowCommand):
     may_change_files = True
 
     def run(self):
-        self.run_command(['git', 'stash'])
+        self.run_command(['svn', 'stash'])
 
 
-class GitStashPopCommand(GitWindowCommand):
+class SvnStashPopCommand(SvnWindowCommand):
     def run(self):
-        self.run_command(['git', 'stash', 'pop'])
+        self.run_command(['svn', 'stash', 'pop'])
 
 
-class GitStashApplyCommand(GitWindowCommand):
+class SvnStashApplyCommand(SvnWindowCommand):
     may_change_files = True
     command_to_run_after_list = 'apply'
 
     def run(self):
-        self.run_command(['git', 'stash', 'list'], self.stash_list_done)
+        self.run_command(['svn', 'stash', 'list'], self.stash_list_done)
 
     def stash_list_done(self, result):
         # No stash list at all
@@ -40,8 +40,8 @@ class GitStashApplyCommand(GitWindowCommand):
 
         # get the stash ref (e.g. stash@{3})
         self.stash = self.results[picked].split(':')[0]
-        self.run_command(['git', 'stash', self.command_to_run_after_list, self.stash])
+        self.run_command(['svn', 'stash', self.command_to_run_after_list, self.stash])
 
 
-class GitStashDropCommand(GitStashApplyCommand):
+class SvnStashDropCommand(SvnStashApplyCommand):
     command_to_run_after_list = 'drop'

@@ -1,213 +1,213 @@
 [
-    {   "caption": "Git: Init",
-        "command": "git_init"
+    {   "caption": "Svn: Init",
+        "command": "svn_init"
     }
     ,{
-        "caption": "Git: Blame",
-        "command": "git_blame"
+        "caption": "Svn: Blame",
+        "command": "svn_blame"
     }
     ,{
-        "caption": "Git: New Tag",
-        "command": "git_new_tag"
+        "caption": "Svn: New Tag",
+        "command": "svn_new_tag"
     }
     ,{
-        "caption": "Git: Show Tags",
-        "command": "git_show_tags"
+        "caption": "Svn: Show Tags",
+        "command": "svn_show_tags"
     }
     ,{
-        "caption": "Git: Push Tags",
-        "command": "git_push_tags"
+        "caption": "Svn: Push Tags",
+        "command": "svn_push_tags"
     }
     ,{
-        "caption": "Git: Log Current File",
-        "command": "git_log"
+        "caption": "Svn: Log Current File",
+        "command": "svn_log"
     }
     ,{
-        "caption": "Git: Log All",
-        "command": "git_log_all"
+        "caption": "Svn: Log All",
+        "command": "svn_log_all"
     }
     ,{
-        "caption": "Git: Graph Current File",
-        "command": "git_graph"
+        "caption": "Svn: Graph Current File",
+        "command": "svn_graph"
     }
     ,{
-        "caption": "Git: Graph All",
-        "command": "git_graph_all"
+        "caption": "Svn: Graph All",
+        "command": "svn_graph_all"
     }
     ,{
-        "caption": "Git: Diff Current File",
-        "command": "git_diff"
+        "caption": "Svn: Diff Current File",
+        "command": "svn_diff"
     }
     ,{
-        "caption": "Git: Diff All",
-        "command": "git_diff_all"
+        "caption": "Svn: Diff All",
+        "command": "svn_diff_all"
     }
     ,{
-        "caption": "Git: Diff Staged",
-        "command": "git_diff_commit"
+        "caption": "Svn: Diff Staged",
+        "command": "svn_diff_commit"
     }
     ,{
-        "caption": "Git: Diff Tool Current File",
-        "command": "git_diff_tool"
+        "caption": "Svn: Diff Tool Current File",
+        "command": "svn_diff_tool"
     }
     ,{
-        "caption": "Git: Diff Tool All",
-        "command": "git_diff_tool_all"
+        "caption": "Svn: Diff Tool All",
+        "command": "svn_diff_tool_all"
     }
     ,{
-        "caption": "Git: Commit",
-        "command": "git_commit"
+        "caption": "Svn: Commit",
+        "command": "svn_commit"
     }
     ,{
-        "caption": "Git: Amend Commit",
-        "command": "git_commit_amend"
+        "caption": "Svn: Amend Commit",
+        "command": "svn_commit_amend"
     }
     ,{
-        "caption": "Git: Quick Commit",
-        "command": "git_quick_commit"
+        "caption": "Svn: Quick Commit",
+        "command": "svn_quick_commit"
     }
     ,{
-        "caption": "Git: Status",
-        "command": "git_status"
+        "caption": "Svn: Status",
+        "command": "svn_status"
     }
     ,{
-        "caption": "Git: Open Modified Files",
-        "command": "git_open_modified_files"
+        "caption": "Svn: Open Modified Files",
+        "command": "svn_open_modified_files"
     }
     ,{
-        "caption": "Git: New Branch",
-        "command": "git_new_branch"
+        "caption": "Svn: New Branch",
+        "command": "svn_new_branch"
     }
     ,{
-        "caption": "Git: Change Branch",
-        "command": "git_branch"
+        "caption": "Svn: Change Branch",
+        "command": "svn_branch"
     }
     ,{
-        "caption": "Git: Merge Branch",
-        "command": "git_merge"
+        "caption": "Svn: Merge Branch",
+        "command": "svn_merge"
     }
     ,{
-        "caption": "Git: Delete Branch",
-        "command": "git_delete_branch"
+        "caption": "Svn: Delete Branch",
+        "command": "svn_delete_branch"
     }
     ,{
-        "caption": "Git: Stash Changes",
-        "command": "git_stash"
+        "caption": "Svn: Stash Changes",
+        "command": "svn_stash"
     }
     ,{
-        "caption": "Git: Stash Pop",
-        "command": "git_stash_pop"
+        "caption": "Svn: Stash Pop",
+        "command": "svn_stash_pop"
     }
     ,{
-        "caption": "Git: Stash Apply",
-        "command": "git_stash_apply"
+        "caption": "Svn: Stash Apply",
+        "command": "svn_stash_apply"
     }
     ,{
-        "caption": "Git: Stash Drop",
-        "command": "git_stash_drop"
+        "caption": "Svn: Stash Drop",
+        "command": "svn_stash_drop"
     }
     ,{
-        "caption": "Git: Add Current File",
-        "command": "git_add"
+        "caption": "Svn: Add Current File",
+        "command": "svn_add"
     }
     ,{
-        "caption": "Git: Add...",
-        "command": "git_add_choice"
+        "caption": "Svn: Add...",
+        "command": "svn_add_choice"
     }
     ,{
-        "caption": "Git: Checkout Current File",
-        "command": "git_checkout"
+        "caption": "Svn: Checkout Current File",
+        "command": "svn_checkout"
     }
     ,{
-        "caption": "Git: Fetch",
-        "command": "git_fetch"
+        "caption": "Svn: Fetch",
+        "command": "svn_fetch"
     }
     ,{
-        "caption": "Git: Pull",
-        "command": "git_pull"
+        "caption": "Svn: Pull",
+        "command": "svn_pull"
     }
     ,{
-        "caption": "Git: Pull Current Branch",
-        "command": "git_pull_current_branch"
+        "caption": "Svn: Pull Current Branch",
+        "command": "svn_pull_current_branch"
     }
     ,{
-        "caption": "Git: Push",
-        "command": "git_push"
+        "caption": "Svn: Push",
+        "command": "svn_push"
     }
     ,{
-        "caption": "Git: Push Current Branch",
-        "command": "git_push_current_branch"
+        "caption": "Svn: Push Current Branch",
+        "command": "svn_push_current_branch"
     }
     ,{
-        "caption": "Git: Show Current File",
-        "command": "git_show"
+        "caption": "Svn: Show Current File",
+        "command": "svn_show"
     }
     ,{
-        "caption": "Git: Toggle Annotations",
-        "command": "git_toggle_annotations"
+        "caption": "Svn: Toggle Annotations",
+        "command": "svn_toggle_annotations"
     }
     ,{
-        "caption": "Git: Custom Command",
-        "command": "git_custom"
+        "caption": "Svn: Custom Command",
+        "command": "svn_custom"
     }
     ,{
-        "caption": "Git Flow: Feature Start", 
-        "command": "git_flow_feature_start"
+        "caption": "Svn Flow: Feature Start", 
+        "command": "svn_flow_feature_start"
     }
     ,{
-        "caption": "Git Flow: Feature Finish",
-        "command": "git_flow_feature_finish"
+        "caption": "Svn Flow: Feature Finish",
+        "command": "svn_flow_feature_finish"
     }
     ,{
-        "caption": "Git Flow: Release Start",
-        "command": "git_flow_release_start"
+        "caption": "Svn Flow: Release Start",
+        "command": "svn_flow_release_start"
     }
     ,{
-        "caption": "Git Flow: Release Finish",
-        "command": "git_flow_release_finish"
+        "caption": "Svn Flow: Release Finish",
+        "command": "svn_flow_release_finish"
     }
     ,{
-        "caption": "Git Flow: Hotfix Start",
-        "command": "git_flow_hotfix_start"
+        "caption": "Svn Flow: Hotfix Start",
+        "command": "svn_flow_hotfix_start"
     }
     ,{
-        "caption": "Git Flow: Hotfix Finish",
-        "command": "git_flow_hotfix_finish"
+        "caption": "Svn Flow: Hotfix Finish",
+        "command": "svn_flow_hotfix_finish"
     }
     ,{
-        "caption": "Git: Open...",
-        "command": "git_open_file"
+        "caption": "Svn: Open...",
+        "command": "svn_open_file"
     }
     ,{
-        "caption": "Git: Reset (unstage) Current File",
-        "command": "git_reset_head"
+        "caption": "Svn: Reset (unstage) Current File",
+        "command": "svn_reset_head"
     }
     ,{
-        "caption": "Git: Reset (unstage) All",
-        "command": "git_reset_head_all"
+        "caption": "Svn: Reset (unstage) All",
+        "command": "svn_reset_head_all"
     }
     ,{
-        "caption": "Git: Reset (hard) HEAD",
-        "command": "git_reset_hard_head"
+        "caption": "Svn: Reset (hard) HEAD",
+        "command": "svn_reset_hard_head"
     }
     ,{
-        "caption": "Git: Add Selected Hunk",
-        "command": "git_add_selected_hunk"
+        "caption": "Svn: Add Selected Hunk",
+        "command": "svn_add_selected_hunk"
     }
     ,{
-        "caption": "Git: Commit Selected Hunk",
-        "command": "git_commit_selected_hunk"
+        "caption": "Svn: Commit Selected Hunk",
+        "command": "svn_commit_selected_hunk"
     }
     ,{
-        "caption": "Git: Gui",
-        "command": "git_gui"
+        "caption": "Svn: Gui",
+        "command": "svn_gui"
     }
     ,{
-        "caption": "Git: Gitk",
-        "command": "git_gitk"
+        "caption": "Svn: Svnk",
+        "command": "svn_svnk"
     }
     ,{
-        "caption": "Git: Commit history",
-        "command": "git_commit_history"
+        "caption": "Svn: Commit history",
+        "command": "svn_commit_history"
     }
 ]

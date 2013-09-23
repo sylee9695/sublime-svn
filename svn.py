@@ -8,12 +8,12 @@ import os.path
 import time
 
 # when sublime loads a plugin it's cd'd into the plugin directory. Thus
-# __file__ is useless for my purposes. What I want is "Packages/Git", but
+# __file__ is useless for my purposes. What I want is "Packages/Svn", but
 # allowing for the possibility that someone has renamed the file.
 # Fun discovery: Sublime on windows still requires posix path separators.
 PLUGIN_DIRECTORY = os.getcwd().replace(os.path.normpath(os.path.join(os.getcwd(), '..', '..')) + os.path.sep, '').replace(os.path.sep, '/')
 
-git_root_cache = {}
+svn_root_cache = {}
 
 
 def main_thread(callback, *args, **kwargs):
@@ -26,17 +26,17 @@ def open_url(url):
     sublime.active_window().run_command('open_url', {"url": url})
 
 
-def git_root(directory):
-    global git_root_cache
+def svn_root(directory):
+    global svn_root_cache
 
     retval = False
     leaf_dir = directory
 
-    if leaf_dir in git_root_cache and git_root_cache[leaf_dir]['expires'] > time.time():
-        return git_root_cache[leaf_dir]['retval']
+    if leaf_dir in svn_root_cache and svn_root_cache[leaf_dir]['expires'] > time.time():
+        return svn_root_cache[leaf_dir]['retval']
 
     while directory:
-        if os.path.exists(os.path.join(directory, '.git')):
+        if os.path.exists(os.path.join(directory, '.svn')):
             retval = directory
             break
         parent = os.path.realpath(os.path.join(directory, os.path.pardir))
@@ -46,7 +46,7 @@ def git_root(directory):
             break
         directory = parent
 
-    git_root_cache[leaf_dir] = {
+    svn_root_cache[leaf_dir] = {
         'retval': retval,
         'expires': time.time() + 5
     }
@@ -55,8 +55,8 @@ def git_root(directory):
 
 
 # for readability code
-def git_root_exist(directory):
-    return git_root(directory)
+def svn_root_exist(directory):
+    return svn_root(directory)
 
 
 def view_contents(view):
@@ -78,7 +78,7 @@ def _make_text_safeish(text, fallback_encoding, method='decode'):
     # The unicode decode here is because sublime converts to unicode inside
     # insert in such a way that unknown characters will cause errors, which is
     # distinctly non-ideal... and there's no way to tell what's coming out of
-    # git in output. So...
+    # svn in output. So...
     try:
         unitext = getattr(text, method)('utf-8')
     except (UnicodeEncodeError, UnicodeDecodeError):
@@ -131,13 +131,13 @@ class CommandThread(threading.Thread):
             main_thread(self.on_done, e.returncode)
         except OSError, e:
             if e.errno == 2:
-                main_thread(sublime.error_message, "Git binary could not be found in PATH\n\nConsider using the git_command setting for the Git plugin\n\nPATH is: %s" % os.environ['PATH'])
+                main_thread(sublime.error_message, "Svn binary could not be found in PATH\n\nConsider using the svn_command setting for the Svn plugin\n\nPATH is: %s" % os.environ['PATH'])
             else:
                 raise e
 
 
 # A base for all commands
-class GitCommand(object):
+class SvnCommand(object):
     may_change_files = False
 
     def run_command(self, command, callback=None, show_status=True,
@@ -149,13 +149,13 @@ class GitCommand(object):
         if 'fallback_encoding' not in kwargs and self.active_view() and self.active_view().settings().get('fallback_encoding'):
             kwargs['fallback_encoding'] = self.active_view().settings().get('fallback_encoding').rpartition('(')[2].rpartition(')')[0]
 
-        s = sublime.load_settings("Git.sublime-settings")
+        s = sublime.load_settings("Svn.sublime-settings")
         if s.get('save_first') and self.active_view() and self.active_view().is_dirty() and not no_save:
             self.active_view().run_command('save')
-        if command[0] == 'git' and s.get('git_command'):
-            command[0] = s.get('git_command')
-        if command[0] == 'git-flow' and s.get('git_flow_command'):
-            command[0] = s.get('git_flow_command')
+        if command[0] == 'svn' and s.get('svn_command'):
+            command[0] = s.get('svn_command')
+        if command[0] == 'svn-flow' and s.get('svn_flow_command'):
+            command[0] = s.get('svn_flow_command')
         if not callback:
             callback = self.generic_done
 
@@ -179,8 +179,8 @@ class GitCommand(object):
                 # self.active_view().show(position)
 
         view = self.active_view()
-        if view and view.settings().get('live_git_annotations'):
-            self.view.run_command('git_annotate')
+        if view and view.settings().get('live_svn_annotations'):
+            self.view.run_command('svn_annotate')
 
         if not result.strip():
             return
@@ -209,18 +209,18 @@ class GitCommand(object):
 
     def panel(self, output, **kwargs):
         if not hasattr(self, 'output_view'):
-            self.output_view = self.get_window().get_output_panel("git")
+            self.output_view = self.get_window().get_output_panel("svn")
         self.output_view.set_read_only(False)
         self._output_to_view(self.output_view, output, clear=True, **kwargs)
         self.output_view.set_read_only(True)
-        self.get_window().run_command("show_panel", {"panel": "output.git"})
+        self.get_window().run_command("show_panel", {"panel": "output.svn"})
 
     def quick_panel(self, *args, **kwargs):
         self.get_window().show_quick_panel(*args, **kwargs)
 
 
-# A base for all git commands that work with the entire repository
-class GitWindowCommand(GitCommand, sublime_plugin.WindowCommand):
+# A base for all svn commands that work with the entire repository
+class SvnWindowCommand(SvnCommand, sublime_plugin.WindowCommand):
     def active_view(self):
         return self.window.active_view()
 
@@ -236,11 +236,11 @@ class GitWindowCommand(GitCommand, sublime_plugin.WindowCommand):
 
     # If there's no active view or the active view is not a file on the
     # filesystem (e.g. a search results view), we can infer the folder
-    # that the user intends Git commands to run against when there's only
+    # that the user intends Svn commands to run against when there's only
     # only one.
     def is_enabled(self):
         if self._active_file_name() or len(self.window.folders()) == 1:
-            return git_root(self.get_working_dir())
+            return svn_root(self.get_working_dir())
 
     def get_file_name(self):
         return ''
@@ -249,7 +249,7 @@ class GitWindowCommand(GitCommand, sublime_plugin.WindowCommand):
         return ''
 
     # If there is a file in the active view use that file's directory to
-    # search for the Git root.  Otherwise, use the only folder that is
+    # search for the Svn root.  Otherwise, use the only folder that is
     # open.
     def get_working_dir(self):
         file_name = self._active_file_name()
@@ -265,22 +265,22 @@ class GitWindowCommand(GitCommand, sublime_plugin.WindowCommand):
         return self.window
 
 
-# A base for all git commands that work with the file in the active view
-class GitTextCommand(GitCommand, sublime_plugin.TextCommand):
+# A base for all svn commands that work with the file in the active view
+class SvnTextCommand(SvnCommand, sublime_plugin.TextCommand):
     def active_view(self):
         return self.view
 
     def is_enabled(self):
         # First, is this actually a file on the file system?
         if self.view.file_name() and len(self.view.file_name()) > 0:
-            return git_root(self.get_working_dir())
+            return svn_root(self.get_working_dir())
 
     def get_file_name(self):
         return os.path.basename(self.view.file_name())
 
     def get_relative_file_name(self):
         working_dir = self.get_working_dir()
-        file_path = working_dir.replace(git_root(working_dir), '')[1:]
+        file_path = working_dir.replace(svn_root(working_dir), '')[1:]
         file_name = os.path.join(file_path, self.get_file_name())
         return file_name.replace('\\', '/')  # windows issues
 
@@ -303,31 +303,31 @@ class GitTextCommand(GitCommand, sublime_plugin.TextCommand):
 # A few miscellaneous commands
 
 
-class GitCustomCommand(GitWindowCommand):
+class SvnCustomCommand(SvnWindowCommand):
     may_change_files = True
 
     def run(self):
-        self.get_window().show_input_panel("Git command", "",
+        self.get_window().show_input_panel("Svn command", "",
             self.on_input, None, None)
 
     def on_input(self, command):
         command = str(command)  # avoiding unicode
         if command.strip() == "":
-            self.panel("No git command provided")
+            self.panel("No svn command provided")
             return
         import shlex
-        command_splitted = ['git'] + shlex.split(command)
+        command_splitted = ['svn'] + shlex.split(command)
         print command_splitted
         self.run_command(command_splitted)
 
 
-class GitGuiCommand(GitTextCommand):
+class SvnGuiCommand(SvnTextCommand):
     def run(self, edit):
-        command = ['git', 'gui']
+        command = ['svn', 'gui']
         self.run_command(command)
 
 
-class GitGitkCommand(GitTextCommand):
+class SvnSvnkCommand(SvnTextCommand):
     def run(self, edit):
-        command = ['gitk']
+        command = ['svnk']
         self.run_command(command)

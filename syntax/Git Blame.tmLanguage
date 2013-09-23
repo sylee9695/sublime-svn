@@ -4,10 +4,10 @@
 <dict>
 	<key>fileTypes</key>
 	<array>
-		<string>git-blame</string>
+		<string>svn-blame</string>
 	</array>
 	<key>name</key>
-	<string>Git Blame</string>
+	<string>Svn Blame</string>
 	<key>patterns</key>
 	<array>
 		<dict>
@@ -16,37 +16,37 @@
 				<key>1</key>
 				<dict>
 					<key>name</key>
-					<string>string.sha.git-blame</string>
+					<string>string.sha.svn-blame</string>
 				</dict>
 				<key>2</key>
 				<dict>
 					<key>name</key>
-					<string>string.path.git-blame</string>
+					<string>string.path.svn-blame</string>
 				</dict>
 				<key>3</key>
 				<dict>
 					<key>name</key>
-					<string>support.function.author.git-blame</string>
+					<string>support.function.author.svn-blame</string>
 				</dict>
 				<key>4</key>
 				<dict>
 					<key>name</key>
-					<string>constant.numeric.date.git-blame</string>
+					<string>constant.numeric.date.svn-blame</string>
 				</dict>
 				<key>5</key>
 				<dict>
 					<key>name</key>
-					<string>variable.parameter.line-number.git-blame</string>
+					<string>variable.parameter.line-number.svn-blame</string>
 				</dict>
 			</dict>
 			<key>match</key>
 			<string>^(\^?[a-f0-9]+)\s+([\w\-\d\.\/]*)\s*\((.*?)\s+(\d{4}-\d\d-\d\d( \d\d:\d\d:\d\d [+-]\d{4})?)\s+(\d+)\)</string>
 			<key>name</key>
-			<string>line.comment.git-blame</string>
+			<string>line.comment.svn-blame</string>
 		</dict>
 	</array>
 	<key>scopeName</key>
-	<string>text.git-blame</string>
+	<string>text.svn-blame</string>
 	<key>uuid</key>
 	<string>5d37add9-889e-4174-b232-4bd423b84c0a</string>
 </dict>
