@@ -18,9 +18,9 @@ class SvnAddChoiceCommand(status.SvnStatusCommand):
         working_dir = svn_root(self.get_working_dir())
 
         if picked_index == 0:
-            command = ['svn', 'add', '--update']
+            command = ['svn', 'add', '*', '--force']
         elif picked_index == 1:
-            command = ['svn', 'add', '--all']
+            command = ['svn', 'add', '*', '--force']
         else:
             command = ['svn']
             picked_file = picked_file.strip('"')
